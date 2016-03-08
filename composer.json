@@ -1,0 +1,20 @@
+{
+  "name": "apaar/chat",
+  "description": "Simple PHP7 chat application using WebSockets",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Apaar Mann",
+      "email": "apaar@apaarmann.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Apaar\\Chat\\" : "src/"
+    }
+  },
+  "require": {
+    "cboden/ratchet": "0.3.*"
+  }
+}

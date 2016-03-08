@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Client</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <style>
+        .no-close .ui-dialog-titlebar-close {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="chat-area" style="display: none; text-align: center;height: 50%; width: 75%;border: solid;color: dimgray">
+    <div id="message-box" style="font-style: italic; height: 200px; overflow-y: scroll"></div>
+    <div id="send-message-box" style="border: ridge;color: dimgray">
+        <label for="client-message">Enter message:</label><input id="client-message" type="text">
+        <button id="send-message" onclick="sendMessage();">Send</button>
+    </div>
+</div>
+
+<div id="username-input" style="display: none;">
+    <label for="client-name">Enter name:</label>
+    <input id="client-name" type="text" value=""/>
+    <div id="username-input-error" style="color: brown;font-size: small;font-style: italic;display: none;"></div>
+</div>
+
+
+<script type="application/javascript">
+    var username;
+    $(function(){
+        $('#username-input').dialog({
+            modal: true,
+            closeOnEscape: false,
+            dialogClass: "no-close",
+            buttons: [
+                {
+                    text: "Submit",
+                    click: function() {
+                        submitName();
+                    }
+                }
+            ]
+        });
+    });
+
+    $('#username-input').keypress(function(e) {
+        if (e.keyCode == $.ui.keyCode.ENTER) {
+             submitName();
+        }
+    });
+
+    $('#client-message').keypress(function(e) {
+        if (e.keyCode == $.ui.keyCode.ENTER) {
+            sendMessage();
+        }
+    });
+
+    var submitName = function () {
+        username = $('#client-name').val().trim();
+        if (username === '') {
+            $("#username-input-error").html('Please enter a valid name!').show();
+        } else {
+            setConnection(username);
+            $('#chat-area').show();
+            $('#username-input').dialog("close");
+        }
+    };
+</script>
+
+<!-- WebSocket JS -->
+<script type="application/javascript">
+
+    var conn;
+
+    function setConnection(username) {
+
+        conn = new WebSocket('ws://localhost:8080');
+
+        conn.onopen = function (e) {
+            console.log("Connection established!");
+            conn.send(username + ' joined the chat!');
+        };
+
+        conn.onmessage = function (e) {
+            $('#message-box').append('<span class="message">' + e.data + '</span><br/>');
+        };
+
+        conn.onerror = function (e) {
+            console.error("Unable to open connection with Chat Server");
+        }
+    }
+
+    function sendMessage() {
+        var clientMessage = $('#client-message');
+        var message = clientMessage.val();
+        clientMessage.val('');
+        conn.send(username + ': ' + message);
+    }
+
+</script>
+</body>
+</html>
