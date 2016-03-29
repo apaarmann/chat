@@ -15,6 +15,7 @@
     }
   },
   "require": {
+    "php": ">=7.0.0",
     "cboden/ratchet": "0.3.*"
   }
 }
